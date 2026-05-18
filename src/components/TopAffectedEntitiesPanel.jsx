@@ -11,16 +11,17 @@ export default function TopAffectedEntitiesPanel({ entities }) {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div className="space-y-4">
       {entities.map((entity) => (
         <Card key={entity.id} className="border-border">
-          <CardHeader>
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <CardTitle className="text-base font-semibold text-text-primary">
+          <CardContent className="p-5">
+            <div className="grid grid-cols-[250px_1fr_auto] gap-6 items-center">
+              {/* Left: Entity Info */}
+              <div>
+                <div className="text-base font-semibold text-text-primary mb-2">
                   {entity.name}
-                </CardTitle>
-                <div className="mt-2 flex items-center gap-2">
+                </div>
+                <div className="flex items-center gap-2 mb-3">
                   <Badge variant="default" className="text-xs">
                     <Server className="mr-1 h-3 w-3" />
                     {entity.service}
@@ -32,66 +33,58 @@ export default function TopAffectedEntitiesPanel({ entities }) {
                     {entity.avgSeverity}
                   </Badge>
                 </div>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Suppression Count */}
-            <div>
-              <div className="text-xs font-semibold uppercase text-text-muted">
-                Total Suppressions (7d)
-              </div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <div className="text-3xl font-bold text-text-primary">
-                  {entity.totalSuppressions.toLocaleString()}
+                <div className="flex flex-wrap gap-1.5">
+                  {entity.topServices.map((service) => (
+                    <Badge key={service} variant="secondary" className="text-xs">
+                      {service}
+                    </Badge>
+                  ))}
                 </div>
-                <TrendingUp className="h-4 w-4 text-accent-red" />
               </div>
-            </div>
 
-            {/* Weekly Trend Chart */}
-            <div>
-              <div className="text-xs font-semibold uppercase text-text-muted mb-2">
-                Weekly Trend
+              {/* Center: Weekly Trend Chart */}
+              <div>
+                <div className="text-xs font-semibold uppercase text-text-muted mb-2">
+                  Weekly Trend
+                </div>
+                <ResponsiveContainer width="100%" height={80}>
+                  <BarChart data={entity.weeklyTrend}>
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fill: '#94a3b8', fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis hide />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                      }}
+                      labelStyle={{ color: '#e2e8f0' }}
+                    />
+                    <Bar
+                      dataKey="suppressions"
+                      fill={severityColors[entity.avgSeverity]}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
-              <ResponsiveContainer width="100%" height={80}>
-                <BarChart data={entity.weeklyTrend}>
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fill: '#94a3b8', fontSize: 10 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis hide />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #334155',
-                      borderRadius: '6px',
-                      fontSize: '12px',
-                    }}
-                    labelStyle={{ color: '#e2e8f0' }}
-                  />
-                  <Bar
-                    dataKey="suppressions"
-                    fill={severityColors[entity.avgSeverity]}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
 
-            {/* Top Services */}
-            <div>
-              <div className="text-xs font-semibold uppercase text-text-muted mb-2">
-                Top Impacted Services
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {entity.topServices.map((service) => (
-                  <Badge key={service} variant="secondary" className="text-xs">
-                    {service}
-                  </Badge>
-                ))}
+              {/* Right: Suppression Count */}
+              <div className="text-center">
+                <div className="text-xs font-semibold uppercase text-text-muted mb-2">
+                  Total Suppressions (7d)
+                </div>
+                <div className="flex items-baseline gap-2 justify-center">
+                  <div className="text-3xl font-bold text-text-primary">
+                    {entity.totalSuppressions.toLocaleString()}
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-accent-red" />
+                </div>
               </div>
             </div>
           </CardContent>

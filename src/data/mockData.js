@@ -98,15 +98,13 @@ export const operationalEvents = [
     ],
     suppressedIssues: generateSuppressedIssues(147, ['checkout', 'payment', 'auth'], 'critical'),
     timeSeriesData: [
-      { time: '22:30', issues: 12 },
-      { time: '22:35', issues: 18 },
-      { time: '22:40', issues: 31 },
-      { time: '22:45', issues: 45 },
-      { time: '22:50', issues: 67 },
-      { time: '22:55', issues: 89 },
-      { time: '23:00', issues: 112 },
-      { time: '23:05', issues: 134 },
-      { time: '23:10', issues: 147 }
+      { time: 'Mon', issues: 18 },
+      { time: 'Tue', issues: 42 },
+      { time: 'Wed', issues: 23 },
+      { time: 'Thu', issues: 67 },
+      { time: 'Fri', issues: 89 },
+      { time: 'Sat', issues: 54 },
+      { time: 'Sun', issues: 147 }
     ]
   },
   {
@@ -168,15 +166,13 @@ export const operationalEvents = [
     ],
     suppressedIssues: generateSuppressedIssues(89, ['database', 'api-gateway', 'user-service', 'order-service'], 'high'),
     timeSeriesData: [
-      { time: '21:00', issues: 8 },
-      { time: '21:10', issues: 15 },
-      { time: '21:20', issues: 23 },
-      { time: '21:30', issues: 34 },
-      { time: '21:40', issues: 48 },
-      { time: '21:50', issues: 61 },
-      { time: '22:00', issues: 73 },
-      { time: '22:10', issues: 82 },
-      { time: '22:20', issues: 89 }
+      { time: 'Mon', issues: 15 },
+      { time: 'Tue', issues: 23 },
+      { time: 'Wed', issues: 34 },
+      { time: 'Thu', issues: 28 },
+      { time: 'Fri', issues: 61 },
+      { time: 'Sat', issues: 48 },
+      { time: 'Sun', issues: 89 }
     ]
   },
   {
@@ -230,14 +226,13 @@ export const operationalEvents = [
     ],
     suppressedIssues: generateSuppressedIssues(62, ['payment', 'checkout', 'billing'], 'high'),
     timeSeriesData: [
-      { time: '23:00', issues: 5 },
-      { time: '23:05', issues: 11 },
-      { time: '23:10', issues: 19 },
-      { time: '23:15', issues: 28 },
-      { time: '23:20', issues: 39 },
-      { time: '23:25', issues: 48 },
-      { time: '23:30', issues: 56 },
-      { time: '23:35', issues: 62 }
+      { time: 'Mon', issues: 11 },
+      { time: 'Tue', issues: 19 },
+      { time: 'Wed', issues: 8 },
+      { time: 'Thu', issues: 28 },
+      { time: 'Fri', issues: 39 },
+      { time: 'Sat', issues: 22 },
+      { time: 'Sun', issues: 62 }
     ]
   }
 ]

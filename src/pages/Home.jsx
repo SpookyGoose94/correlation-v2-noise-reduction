@@ -1,9 +1,9 @@
 import { AlertCircle, TrendingUp, Search, AlertTriangle } from 'lucide-react'
 import Layout from '../components/Layout'
-import OperationalEventsTable from '../components/OperationalEventsTable'
+import OperationalEventsCards from '../components/OperationalEventsCards'
 import NoiseReductionPanel from '../components/NoiseReductionPanel'
 import RecentChangesCard from '../components/RecentChangesCard'
-import TopAffectedEntitiesPanel from '../components/TopAffectedEntitiesPanel'
+import TopAffectedEntitiesTable from '../components/TopAffectedEntitiesTable'
 import { operationalEvents, notificationReduction, recentChanges, topAffectedEntities } from '../data/mockData'
 
 export default function Home() {
@@ -39,7 +39,7 @@ export default function Home() {
             </div>
           </div>
 
-          <OperationalEventsTable events={operationalEvents} />
+          <OperationalEventsCards events={operationalEvents} />
         </section>
 
         {/* Section 2: Top Affected Entities */}
@@ -58,7 +58,7 @@ export default function Home() {
             </div>
           </div>
 
-          <TopAffectedEntitiesPanel entities={topAffectedEntities} />
+          <TopAffectedEntitiesTable entities={topAffectedEntities} />
         </section>
 
         {/* Section 3: What Changed Recently */}
