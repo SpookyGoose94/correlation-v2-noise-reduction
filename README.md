@@ -4,19 +4,85 @@ A complete reimagining of the correlation platform focused on **real-time noise 
 
 ## ✨ Recent Updates
 
-### UI/UX Improvements (Latest)
-- **Redesigned "What Needs Attention" section**: Switched from table to compact horizontal card grid with:
-  - Visual hierarchy with clear headings and data points
-  - Bar charts showing weekly trends (7 days: Mon-Sun)
-  - Service name badges for quick scanning
-  - Reduced padding and spacing for better viewport utilization
-- **Simplified "Top Affected Entities"**: Converted to clean table format for improved scannability
-- **Badge Accessibility Enhancements**:
-  - Fixed light mode contrast issues for all badge types
-  - Service name badges now have visible grey backgrounds
-  - Severity badges use optimized text colors for readability
-  - Meets WCAG accessibility standards in both light and dark modes
-- **Data Improvements**: Weekly trend charts now show realistic patterns (not just ascending values)
+### Major UI/UX Overhaul - May 18, 2026
+
+#### Dashboard Layout Improvements
+- **Redesigned "What Needs Attention" section**:
+  - Switched from scannable table to **compact horizontal card grid** (3-column layout on desktop)
+  - Each card now displays:
+    - Truncated event title for space efficiency
+    - Service count and severity badges at the top
+    - **Issues Suppressed** metric prominently displayed with trending icon
+    - **Weekly Trend** bar chart showing 7 days of data (Mon-Sun)
+    - **Top Impacted Services** as grey badge pills at the bottom
+  - Reduced padding from `p-6` to `p-4` and minimized all margins for better viewport utilization
+  - Cards now fit both sections in viewport simultaneously
+  - Hover effects with blue border highlight
+  - Click-through navigation to event detail page maintained
+
+- **Simplified "Top Affected Entities"**:
+  - Converted from horizontal card grid to **clean table format** for maximum scannability
+  - Table displays: Entity name, Service badge, Severity badge, Top Services (3 badges), Total Suppressions
+  - Hover effects on rows for better interactivity
+  - Removed charts from this section to reduce visual clutter
+
+#### Badge Accessibility & Visual Improvements
+**The Challenge**: Light mode badges were nearly invisible with poor contrast
+
+**The Solution**:
+- **Service name badges** (`secondary` variant):
+  - Light mode: `bg-gray-200 text-gray-700` - visible grey background with dark text
+  - Dark mode: `bg-background-tertiary text-text-secondary` - maintained original styling
+
+- **Severity badges** (warning/destructive variants):
+  - **Critical** (red badge): `bg-red-100 text-red-900` in light mode - light pink background with dark red text
+  - **High** (yellow badge): `bg-yellow-100 text-yellow-800` in light mode - light yellow background with dark yellow text
+  - Dark mode: Maintained semi-transparent backgrounds with bright text
+  - Added `!important` flag to override CSS specificity issues
+
+- **Meets WCAG AA accessibility standards** in both light and dark modes
+- All badge text now clearly readable with proper contrast ratios
+
+#### Data & Chart Improvements
+- **Weekly trend data**: Changed x-axis from timestamps (`22:30`, `22:35`) to days of week (`Mon`, `Tue`, `Wed`)
+- **Realistic data patterns**: Replaced ascending-only values with varied patterns showing:
+  - Mid-week spikes
+  - Weekend dips
+  - More authentic operational event patterns
+- Bar charts use severity-based colors for visual consistency
+
+#### Developer Experience Enhancements
+- **Created automated deployment scripts**:
+  1. `deploy.sh` - Quick deploy without README updates (existing)
+  2. `deploy-with-readme.sh` - Interactive script that prompts for README documentation
+  3. `auto-deploy.sh` - Fully automated script that generates README updates based on file changes
+
+- **Added DEPLOYMENT.md**: Comprehensive guide explaining:
+  - When to use each deployment script
+  - Comparison table of all options
+  - Recommended workflows
+  - Safety features (backups, change detection, co-author attribution)
+
+- **Smart README management**:
+  - Scripts detect what changed (components, pages, styles, data)
+  - Automatically insert updates into "Recent Updates" section with timestamps
+  - Create backups before modifications
+  - No manual README editing needed for routine updates
+
+#### Technical Improvements
+- Fixed Tailwind config to include standard color palette
+- Removed problematic color imports that were causing badge rendering issues
+- Cleared Vite cache to resolve CSS hot-reload problems
+- Optimized component structure for better maintainability
+
+#### Files Changed
+- `src/components/OperationalEventsCards.jsx` - New horizontal card component
+- `src/components/TopAffectedEntitiesTable.jsx` - New simple table component
+- `src/components/ui/badge.jsx` - Complete accessibility overhaul
+- `src/data/mockData.js` - Updated with realistic weekly patterns
+- `src/pages/Home.jsx` - Switched to new card and table components
+- `tailwind.config.js` - Fixed color palette configuration
+- Added: `deploy-with-readme.sh`, `auto-deploy.sh`, `DEPLOYMENT.md`
 
 ## 🎯 Core Philosophy Shift
 
@@ -46,25 +112,53 @@ Open [http://localhost:5174](http://localhost:5174) (or the port shown in termin
 
 The app is deployed at: **https://correlation-v2-noise-reduction.vercel.app**
 
-### Quick Deploy
+### Deployment Options
 
-Use the deployment script to push changes:
+We provide **3 deployment scripts** to fit different workflows:
 
+#### 1. Quick Deploy (No README updates)
 ```bash
 ./deploy.sh "Your commit message"
 ```
 
-Or without a message (uses timestamp):
+Best for: Quick fixes, minor changes where README doesn't need updating
 
+#### 2. Interactive Deploy with README Prompts
 ```bash
-./deploy.sh
+./deploy-with-readme.sh "Your commit message"
 ```
 
-This will:
-1. Add all changes to git
+**Recommended for most changes!** This script:
+- Detects what type of files changed (components, pages, styles, data)
+- Prompts you if README should be updated
+- Asks for your description of changes
+- Automatically inserts update into README with timestamp
+- Commits and pushes everything together
+
+#### 3. Fully Automated Deploy
+```bash
+./auto-deploy.sh "Your commit message"
+```
+
+Best for: Rapid iterations. Automatically generates README updates based on file changes and pushes everything without prompts.
+
+### What These Scripts Do
+
+All scripts will:
+1. Stage all changes
 2. Create a commit with your message
-3. Push to GitHub
-4. Trigger automatic Vercel deployment (~1-2 minutes)
+3. Add co-author attribution (Claude Opus 4.6)
+4. Push to GitHub
+5. Trigger automatic Vercel deployment (~1-2 minutes)
+
+### Detailed Documentation
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for:
+- Complete guide for each script
+- Comparison table
+- Recommended workflows
+- Safety features
+- Troubleshooting
 
 ### Manual Deploy
 
