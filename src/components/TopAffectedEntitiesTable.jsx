@@ -11,9 +11,6 @@ export default function TopAffectedEntitiesTable({ entities }) {
               Service
             </th>
             <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
-              Affected Entity
-            </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
               Severity
             </th>
             <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-text-muted">
@@ -33,13 +30,6 @@ export default function TopAffectedEntitiesTable({ entities }) {
                   <Server className="h-4 w-4 text-accent-cyan" />
                   <span className="font-semibold text-text-primary">{entity.service}</span>
                 </div>
-              </td>
-
-              {/* Affected Entity */}
-              <td className="px-6 py-4">
-                <Badge variant="default" className="text-xs">
-                  {entity.name}
-                </Badge>
               </td>
 
               {/* Severity */}

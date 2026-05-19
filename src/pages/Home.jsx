@@ -1,4 +1,5 @@
-import { AlertCircle, TrendingUp, Search, AlertTriangle } from 'lucide-react'
+import { useState } from 'react'
+import { AlertCircle, TrendingUp, Search, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import Layout from '../components/Layout'
 import OperationalEventsCards from '../components/OperationalEventsCards'
 import NoiseReductionPanel from '../components/NoiseReductionPanel'
@@ -7,6 +8,8 @@ import TopAffectedEntitiesTable from '../components/TopAffectedEntitiesTable'
 import { operationalEvents, notificationReduction, recentChanges, topAffectedEntities } from '../data/mockData'
 
 export default function Home() {
+  const [isChangesCollapsed, setIsChangesCollapsed] = useState(true)
+
   return (
     <Layout>
       <div className="space-y-8">
@@ -64,20 +67,30 @@ export default function Home() {
         {/* Section 3: What Changed Recently */}
         <section>
           <div className="mb-4">
-            <h2 className="flex items-center gap-2 text-xl font-semibold text-text-primary">
+            <h2
+              className="flex items-center gap-2 text-xl font-semibold text-text-primary cursor-pointer hover:text-accent-cyan transition-colors"
+              onClick={() => setIsChangesCollapsed(!isChangesCollapsed)}
+            >
               <Search className="h-5 w-5 text-accent-cyan" />
               What Changed Recently
+              {isChangesCollapsed ? (
+                <ChevronDown className="h-5 w-5 text-text-muted" />
+              ) : (
+                <ChevronUp className="h-5 w-5 text-text-muted" />
+              )}
             </h2>
             <p className="mt-1 text-sm text-text-muted">
               Emerging patterns and operational behavior shifts
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            {recentChanges.map((change) => (
-              <RecentChangesCard key={change.id} change={change} />
-            ))}
-          </div>
+          {!isChangesCollapsed && (
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              {recentChanges.map((change) => (
+                <RecentChangesCard key={change.id} change={change} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Section 3: Notification Reduction Summary */}

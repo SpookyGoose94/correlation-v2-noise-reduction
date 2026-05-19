@@ -4,7 +4,26 @@ A complete reimagining of the correlation platform focused on **real-time noise 
 
 ## ✨ Recent Updates
 
-### Signal Management & Issue Detail Modal - May 19, 2026 (Latest)
+### Collapsible Dashboard Sections - May 19, 2026 (Latest)
+
+#### What Changed Recently Section - Collapsible
+- **Made "What Changed Recently" section collapsible** to reduce dashboard clutter
+- **Collapsed by default** - users can expand when needed
+- **Clickable heading** with hover effect (blue text on hover)
+- **Chevron icon** indicates expand/collapse state:
+  - ChevronDown when collapsed
+  - ChevronUp when expanded
+- **State management**: Uses React useState to track collapsed state
+- **Smooth transitions** on expand/collapse
+
+#### Technical Changes
+- Updated `src/pages/Home.jsx`:
+  - Added useState for collapsed state (default: true)
+  - Added ChevronDown/ChevronUp icons from lucide-react
+  - Made h2 heading clickable with cursor-pointer
+  - Conditional rendering of content grid based on collapsed state
+
+### Signal Management & Issue Detail Modal - May 19, 2026
 
 #### Issue Detail Side Modal
 - **New side modal overlay** that opens when clicking on any signal in the Contributing Signals table
@@ -66,12 +85,13 @@ A complete reimagining of the correlation platform focused on **real-time noise 
 #### Top Affected Services Table
 - **Converted to proper HTML table** matching Events page styling
 - **Removed "Top Services" column** for cleaner layout
+- **Removed "Affected Entity" column** for further simplification
 - **Standardized table structure**:
   - Consistent `px-6 py-4` padding on all cells
   - Proper header styling with `text-xs font-semibold uppercase`
   - Hover effects with `hover:bg-background-tertiary`
   - Proper dividers with `divide-y divide-border`
-- **Current columns**: Service (with icon) → Affected Entity → Severity → Total Suppressions (7d)
+- **Current columns**: Service (with icon) → Severity → Total Suppressions (7d)
 
 #### Technical Changes
 - **New component**: `src/components/IssueDetailModal.jsx` (comprehensive issue drill-down)
@@ -384,7 +404,9 @@ The application has 3 main sections accessible via the sidebar:
   - Total Suppressions count with trending icon
 - Hover effect on rows
 
-#### 3. What Changed Recently
+#### 3. What Changed Recently (Collapsible)
+- **Collapsed by default** to reduce dashboard clutter
+- **Click heading to expand/collapse** with chevron icon indicator
 - 3 cards showing emerging patterns
 - Baseline comparison (7-day rolling)
 - Pattern types:
