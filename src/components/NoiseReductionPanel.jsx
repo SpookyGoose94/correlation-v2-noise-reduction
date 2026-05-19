@@ -1,24 +1,12 @@
 import { TrendingDown, Zap, Target, Activity } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
-import { Badge } from './ui/badge'
+import { Card, CardContent } from './ui/card'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function NoiseReductionPanel({ data }) {
-  const { currentPeriod, comparisonPeriod, weeklyTrend, orchestrationMetrics } = data
+  const { currentPeriod, weeklyTrend, orchestrationMetrics } = data
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-accent-green" />
-            Notification Reduction Summary
-          </CardTitle>
-          <Badge variant="success" className="text-sm">
-            {currentPeriod.label}
-          </Badge>
-        </div>
-      </CardHeader>
       <CardContent>
         {/* Hero Metric */}
         <div className="mb-6 rounded-lg border border-border bg-background-tertiary p-6">

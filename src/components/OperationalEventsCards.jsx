@@ -1,7 +1,6 @@
-import { AlertCircle, Server, TrendingDown, ChevronRight } from 'lucide-react'
+import { Server, TrendingDown } from 'lucide-react'
 import { Badge } from './ui/badge'
 import { Card, CardContent } from './ui/card'
-import { formatRelativeTime } from '../lib/utils'
 import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, ResponsiveContainer, XAxis } from 'recharts'
 
@@ -18,12 +17,11 @@ export default function OperationalEventsCards({ events }) {
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {events.map((event) => {
         const config = severityConfig[event.severity]
-        const reductionPercentage = ((event.consolidatedNotifications / (event.consolidatedNotifications + 1)) * 100).toFixed(1)
 
         return (
           <Card
             key={event.id}
-            className="cursor-pointer transition-all hover:border-accent-blue/50"
+            className="p-0 cursor-pointer transition-all hover:border-accent-blue/50"
             onClick={() => navigate(`/events/${event.id}`)}
           >
             <CardContent className="p-4">

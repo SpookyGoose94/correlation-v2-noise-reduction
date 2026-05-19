@@ -18,6 +18,14 @@ const generateSuppressedIssues = (count, services, baseSeverity) => {
     'Health check failed'
   ]
 
+  const correlationRules = [
+    'Same Service',
+    'Time-based',
+    'Error Pattern',
+    'Deployment Correlation'
+  ]
+
+  const types = ['Issue', 'Change Event']
   const severities = ['critical', 'high', 'medium']
   const issues = []
 
@@ -26,6 +34,8 @@ const generateSuppressedIssues = (count, services, baseSeverity) => {
     const issueType = issueTypes[Math.floor(Math.random() * issueTypes.length)]
     const severity = i < count * 0.3 ? baseSeverity : severities[Math.floor(Math.random() * severities.length)]
     const minutesAgoRandom = Math.floor(Math.random() * 30) + 1
+    const rule = correlationRules[Math.floor(Math.random() * correlationRules.length)]
+    const type = types[Math.floor(Math.random() * types.length)]
 
     issues.push({
       id: `issue-${i + 1}`,
@@ -35,7 +45,9 @@ const generateSuppressedIssues = (count, services, baseSeverity) => {
       timestamp: minutesAgo(minutesAgoRandom),
       source: 'New Relic Alerts',
       condition: `${issueType}`,
-      entity: `${service}-prod-${Math.floor(Math.random() * 5) + 1}`
+      entity: `${service}-prod-${Math.floor(Math.random() * 5) + 1}`,
+      correlationRule: rule,
+      type: type
     })
   }
 
@@ -58,6 +70,7 @@ export const operationalEvents = [
     status: 'active',
     confidence: 94,
     stabilizationWindow: 45, // seconds
+    notificationsSent: 3,
     metrics: {
       impactedUsers: '12.3K',
       failedTransactions: 3420,
@@ -91,10 +104,18 @@ export const operationalEvents = [
       }
     ],
     recommendedActions: [
-      'Check recent deployment logs for payment-service v2.4.1',
-      'Review configuration changes in the latest deployment',
-      'Compare current deployment manifest with previous stable version',
-      'Check for any database migration failures or schema issues'
+      {
+        action: 'Check recent deployment logs for payment-service v2.4.1',
+        reason: 'Errors started immediately after deployment indicating potential deployment issue'
+      },
+      {
+        action: 'Review configuration changes in the latest deployment',
+        reason: 'Configuration mismatches often cause service failures across multiple services'
+      },
+      {
+        action: 'Compare current deployment manifest with previous stable version',
+        reason: 'Manifest changes may reveal unexpected dependencies or resource constraints'
+      }
     ],
     suppressedIssues: generateSuppressedIssues(147, ['checkout', 'payment', 'auth'], 'critical'),
     timeSeriesData: [
@@ -118,6 +139,7 @@ export const operationalEvents = [
     status: 'active',
     confidence: 87,
     stabilizationWindow: 30,
+    notificationsSent: 2,
     metrics: {
       avgLatency: '2.4s',
       p95Latency: '8.7s',
@@ -186,6 +208,7 @@ export const operationalEvents = [
     status: 'investigating',
     confidence: 91,
     stabilizationWindow: 60,
+    notificationsSent: 1,
     metrics: {
       failureRate: '42%',
       affectedOrders: '1.2K',
@@ -234,6 +257,144 @@ export const operationalEvents = [
       { time: 'Sat', issues: 22 },
       { time: 'Sun', issues: 62 }
     ]
+  },
+  {
+    id: 'event-4',
+    title: 'Cache layer failure impacting read operations',
+    description: 'Redis cluster connection failures causing increased database load and latency',
+    severity: 'critical',
+    affectedServices: ['cache', 'api', 'user-service'],
+    consolidatedNotifications: 134,
+    timestamp: hoursAgo(3),
+    status: 'resolved',
+    confidence: 96,
+    stabilizationWindow: 40,
+    notificationsSent: 2,
+    metrics: {
+      cacheHitRate: '12%',
+      dbQueryIncrease: '340%',
+      affectedAPIs: 47,
+      avgLatency: '3.2s'
+    },
+    serviceBreakdown: [
+      {
+        name: 'cache',
+        issueCount: 78,
+        errorRate: '89%',
+        severity: 'critical',
+        topIssue: 'Connection failed in cache',
+        entities: ['redis-cluster-1', 'redis-cluster-2', 'redis-cluster-3']
+      },
+      {
+        name: 'api',
+        issueCount: 38,
+        errorRate: '22%',
+        severity: 'high',
+        topIssue: 'Response time exceeded in api',
+        entities: ['api-prod-2', 'api-prod-5']
+      },
+      {
+        name: 'user-service',
+        issueCount: 18,
+        errorRate: '14%',
+        severity: 'medium',
+        topIssue: 'Service timeout in user-service',
+        entities: ['user-service-prod-1']
+      }
+    ],
+    recommendedActions: [
+      {
+        action: 'Check Redis cluster health and connectivity',
+        reason: 'High connection failure rate indicates cluster instability'
+      },
+      {
+        action: 'Review Redis memory usage and eviction policies',
+        reason: 'Memory pressure can cause connection issues and performance degradation'
+      },
+      {
+        action: 'Verify network connectivity between services and Redis',
+        reason: 'Network issues can cause intermittent connection failures'
+      }
+    ],
+    suppressedIssues: generateSuppressedIssues(134, ['cache', 'api', 'user-service'], 'critical'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 22 },
+      { time: 'Tue', issues: 31 },
+      { time: 'Wed', issues: 45 },
+      { time: 'Thu', issues: 38 },
+      { time: 'Fri', issues: 67 },
+      { time: 'Sat', issues: 94 },
+      { time: 'Sun', issues: 134 }
+    ]
+  },
+  {
+    id: 'event-5',
+    title: 'Authentication service degradation',
+    description: 'SSO provider latency causing login failures and session timeout issues',
+    severity: 'high',
+    affectedServices: ['auth', 'user-service', 'frontend'],
+    consolidatedNotifications: 76,
+    timestamp: hoursAgo(5),
+    status: 'resolved',
+    confidence: 89,
+    stabilizationWindow: 35,
+    notificationsSent: 2,
+    metrics: {
+      loginFailureRate: '34%',
+      affectedUsers: '8.7K',
+      avgLoginTime: '12s',
+      sessionTimeouts: 2341
+    },
+    serviceBreakdown: [
+      {
+        name: 'auth',
+        issueCount: 45,
+        errorRate: '34%',
+        severity: 'high',
+        topIssue: 'Service timeout in auth',
+        entities: ['auth-prod-1', 'auth-prod-2']
+      },
+      {
+        name: 'user-service',
+        issueCount: 21,
+        errorRate: '18%',
+        severity: 'medium',
+        topIssue: 'API endpoint failure in user-service',
+        entities: ['user-service-prod-3']
+      },
+      {
+        name: 'frontend',
+        issueCount: 10,
+        errorRate: '7%',
+        severity: 'medium',
+        topIssue: 'Response time exceeded in frontend',
+        entities: ['frontend-prod-1', 'frontend-prod-2']
+      }
+    ],
+    recommendedActions: [
+      {
+        action: 'Check SSO provider status and response times',
+        reason: 'External SSO latency is causing downstream authentication failures'
+      },
+      {
+        action: 'Review auth service timeout configurations',
+        reason: 'Timeout values may need adjustment to handle provider latency'
+      },
+      {
+        action: 'Verify session management and token refresh logic',
+        reason: 'Session timeouts may be compounding the authentication issues'
+      }
+    ],
+    suppressedIssues: generateSuppressedIssues(76, ['auth', 'user-service', 'frontend'], 'high'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 12 },
+      { time: 'Tue', issues: 18 },
+      { time: 'Wed', issues: 24 },
+      { time: 'Thu', issues: 31 },
+      { time: 'Fri', issues: 45 },
+      { time: 'Sat', issues: 58 },
+      { time: 'Sun', issues: 76 }
+    ]
   }
 ]
 
@@ -243,11 +404,11 @@ export const operationalEvents = [
 export const notificationReduction = {
   currentPeriod: {
     label: 'Last 24 Hours',
-    totalSignals: 2847,
-    operationalEvents: 12,
-    notificationsConsolidated: 2835,
-    reductionPercentage: 99.6,
-    avgNotificationsPerEvent: 236
+    totalSignals: 3142,
+    operationalEvents: 5,
+    notificationsConsolidated: 3137,
+    reductionPercentage: 99.8,
+    avgNotificationsPerEvent: 627
   },
   comparisonPeriod: {
     label: 'Previous 24 Hours',

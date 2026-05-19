@@ -4,6 +4,166 @@ A complete reimagining of the correlation platform focused on **real-time noise 
 
 ## ✨ Recent Updates
 
+### Signal Management & Issue Detail Modal - May 19, 2026 (Latest)
+
+#### Issue Detail Side Modal
+- **New side modal overlay** that opens when clicking on any signal in the Contributing Signals table
+- **Covers 80% of screen width** sliding in from the right
+- **Dark backdrop** with click-outside-to-close functionality
+- **Comprehensive issue drill-down** including:
+  - Issue header with severity, status, created/updated timestamps
+  - "Declare an incident" action button
+  - AI summary section (Beta)
+  - **Alert Events** expandable section with:
+    - Left panel: List of all related alerts with severity, status, opened time, duration
+    - Right panel: Detailed alert view with NRQL query, time series chart, entity info, tags
+  - **Issue Timeline & Event Log** showing incident progression
+  - **Impacted Entities** section with service relationships
+- **Tab navigation** between Overview and Root Cause Analysis
+
+#### Contributing Signals Redesign
+- **Renamed** "Contributing Issues" → **"Contributing Signals"**
+  - Better reflects the reality that table contains multiple signal types (issues, change events, etc.)
+- **Added Type column** with badge showing either "Issue" or "Change Event"
+- **Column order optimized**: Severity Dot → Signal → Type → Service → Entity → Time
+- **Removed Source column** (unified to single source for now)
+- **Proper HTML table structure** with consistent `px-6 py-4` padding matching Events page
+
+#### Filter Bar Reorganization
+- **Primary filter redesigned**:
+  - Removed "Filter by rule:" label
+  - Changed default to **"Golden signals"** with dropdown options:
+    - Golden signals (default)
+    - Components
+    - Scope
+- **Secondary pill filters updated**:
+  - **Added "Rules = All"** pill with dropdown showing correlation rules
+  - **Added "Service = All"** pill with service filtering
+  - **Added "Severity = All"** pill with severity filtering
+  - **Removed "Source"** pill (no longer needed with unified source)
+- **All filters work together** to narrow down signals
+- **Dropdown overlays** on each pill for selecting values
+- **Active state styling** with blue highlight when filter is applied
+
+#### Milestone Visualization Integration
+- **Moved from standalone page** to EventDetail drill-down page
+- **Integrated as collapsible widget** (collapsed by default)
+- **Positioned as second widget** on EventDetail page
+- **Renamed** to "Operational Event Maturity Milestones"
+- **Chevron icon** indicates expand/collapse state
+- **Removed** milestone navigation tab from sidebar menu
+- **Hover interactions** on milestone icons show:
+  - Issue count at that milestone point
+  - Notification channels (Slack, PagerDuty) if notification was sent
+  - Displayed as overlay popover beside icon
+
+#### Dashboard Optimization
+- **Limited "What Needs Attention"** to show **top 3 events only**
+- **Updated badge text** from "{X} active events" to "Top 3 of {X} events"
+- **Cleaner focus** on highest-priority operational events
+- **Full event list** still accessible via Events page
+
+#### Top Affected Services Table
+- **Converted to proper HTML table** matching Events page styling
+- **Removed "Top Services" column** for cleaner layout
+- **Standardized table structure**:
+  - Consistent `px-6 py-4` padding on all cells
+  - Proper header styling with `text-xs font-semibold uppercase`
+  - Hover effects with `hover:bg-background-tertiary`
+  - Proper dividers with `divide-y divide-border`
+- **Current columns**: Service (with icon) → Affected Entity → Severity → Total Suppressions (7d)
+
+#### Technical Changes
+- **New component**: `src/components/IssueDetailModal.jsx` (comprehensive issue drill-down)
+- **Updated components**:
+  - `src/pages/EventDetail.jsx` - Added modal integration, filter redesign, milestone widget
+  - `src/components/TopAffectedEntitiesTable.jsx` - Converted to HTML table
+  - `src/pages/Home.jsx` - Limited to top 3 events
+  - `src/components/Sidebar.jsx` - Removed milestone navigation
+- **Updated mock data**: Added `type` field to signals (Issue/Change Event)
+- **Filter state management**: Added multi-filter support with dropdown components
+
+### Operational Events & Milestone Visualization - May 19, 2026
+
+#### New Events Page
+- **Centralized operational events view**: Complete list/table of all correlated operational events
+- **Stats dashboard** at the top showing:
+  - Total events count
+  - Active events count
+  - Total issues correlated across all events
+  - Total notifications sent
+- **Comprehensive events table** with columns:
+  - Event Name (title + description preview)
+  - Severity badge (critical/high color-coded)
+  - Total Issues correlated
+  - Notifications sent count
+  - Status (Active, Investigating, Resolved, Degrading, Closed)
+  - Last Updated (relative time)
+- **Clickable rows**: Navigate to event detail drill-down
+- **Accessible via sidebar**: New "Events" menu item
+
+#### Milestone Visualization System
+- **New dedicated page** for exploring milestone visualization options
+- **Operational Event Maturity Model**:
+  - Milestones represent key evolution points in an event's lifecycle
+  - Each milestone shows: issue count at that point, action taken, timestamp
+  - Notifications are actions within milestones, not separate milestones
+  - Multiple milestones can occur within the same saturation phase
+
+- **Two Visualization Options**:
+
+  **Option 3: Mountain Elevation (Issue Growth Chart)**
+  - Area chart showing issue count climbing over time
+  - Visual metaphor of "climbing" event maturity
+  - Milestone cards below chart with full details
+
+  **Option 4: Horizontal Progress Bar** ⭐ (Primary)
+  - Color-coded bar representing issue saturation progression:
+    - Blue (15%) - Low saturation
+    - Yellow (25%) - Elevated
+    - Orange (45%) - High (largest block)
+    - Red (15%) - Critical
+  - Milestones positioned below bar with vertical connecting lines
+  - Generic icon styling (not color-coded)
+  - Green notification badges on milestones where notifications were sent
+  - Multiple milestones can appear in same color block
+  - Example progression:
+    1. Cluster Created (1 issue) → notification sent
+    2. Event Renamed (45 issues) → no notification
+    3. Issue Threshold Crossed (120 issues) → notification sent
+    4. Severity → Critical (155 issues) → notification sent
+
+#### Core Correlation Engine Logic
+**Rules-Based Correlation**:
+- System or user-defined rules determine correlation criteria
+- Example rule: Correlate issues from ServiceNOW + NewRelic for accounts X,Y,Z where error rate >30% and tags match
+- When issues match rules, they form a **cluster** (internal term) = **Operational Event** (user-facing term)
+
+**Cluster Evolution & Maturity**:
+- Clusters evolve over time as more issues correlate
+- Evolution examples:
+  - Renaming: "Database latency" → "Checkout service error spikes"
+  - Severity upgrades: High → Critical (when thresholds crossed)
+  - Issue saturation increases: 1 → 45 → 120 → 155 issues
+- **Milestones** = key points in cluster maturity where actions are triggered
+
+**Notification Configuration**:
+- User-defined triggers for when to send notifications
+- Examples:
+  - "Send notification on cluster creation"
+  - "Send notification if 10+ issues in 30min window"
+  - "Send notification on severity upgrade"
+- Destinations: Slack, PagerDuty, etc.
+
+#### Technical Changes
+- **New pages**: `src/pages/Events.jsx`, `src/pages/MilestoneVisualization.jsx`
+- **Updated routing**: Added `/events` and `/milestone-visualization` routes
+- **Sidebar navigation**: Added "Events" and "Milestone Visualization" menu items
+- **Mock data updates**: Added `notificationsSent` field to operational events
+- **Color palette**: Added `accent-purple` to Tailwind config
+- **Card component fixes**: Reduced padding conflicts between Card and CardContent
+- **Clasp-it integration**: Used for UI debugging and layout fixes
+
 ### Major UI/UX Overhaul - May 18, 2026
 
 #### Dashboard Layout Improvements
@@ -190,9 +350,17 @@ Vercel automatically deploys on every push to the `main` branch.
 - Mobile-friendly layout
 - Compact card designs optimized for viewport visibility
 
-## 📊 Dashboard Structure
+## 📊 Application Structure
 
-### 4-Section Layout:
+### Navigation
+The application has 3 main sections accessible via the sidebar:
+1. **Dashboard** - Home page with 4-section summary view (shows top 3 events)
+2. **Events** - Complete list of all operational events
+3. **Settings** - (Future) Configuration and preferences
+
+**Note**: Milestone Visualization is now integrated into the EventDetail drill-down page as a collapsible widget, not a separate navigation item.
+
+### Dashboard (Home Page) - 4-Section Layout:
 
 #### 1. What Needs Attention
 - **Compact horizontal card grid** (3-column layout on desktop)
@@ -234,6 +402,51 @@ Vercel automatically deploys on every push to the `main` branch.
   - Orchestration confidence: 89%
   - False positive rate: 2.3%
 
+### Events Page Structure
+
+**Stats Bar** (Top):
+- Total Events count
+- Active Events count
+- Total Issues Correlated
+- Notifications Sent
+
+**Events Table**:
+- Event Name (title + description preview)
+- Severity (critical/high badge)
+- Total Issues correlated
+- Notifications sent count
+- Status (Active, Investigating, Resolved, Degrading, Closed)
+- Last Updated (relative time)
+- Clickable rows → navigate to event detail
+
+### Milestone Visualization Page
+
+**Purpose**: Visualize operational event maturity progression and cluster evolution
+
+**Current Visualizations**:
+
+**Option 3: Mountain Elevation Chart**
+- Area chart showing issue count growth over time
+- Milestone cards displayed below chart
+- Shows cumulative issue progression
+
+**Option 4: Horizontal Progress Bar** ⭐ (Primary)
+- Color-coded saturation bar:
+  - Blue (15%) - Low saturation
+  - Yellow (25%) - Elevated
+  - Orange (45%) - High (largest block, where most milestones occur)
+  - Red (15%) - Critical
+- Milestones positioned below bar with vertical connecting lines
+- Generic icon styling (neutral colors)
+- Green notification badge when notification was sent
+- Shows exactly where in the saturation lifecycle each milestone occurred
+
+**Milestone Data Structure**:
+- Issue Count at milestone point
+- Action taken (cluster created, renamed, threshold crossed, severity upgraded)
+- Timestamp
+- Notification sent (yes/no)
+
 ## 📋 Event Detail Page
 
 ### Top Actions
@@ -259,13 +472,30 @@ Vercel automatically deploys on every push to the `main` branch.
   - Revenue impact
   - Service downtime
 
+#### Operational Event Maturity Milestones (Collapsible Widget)
+- **Collapsed by default** with chevron indicator
+- **Horizontal progress bar** showing issue saturation:
+  - Blue (15%) - Low
+  - Yellow (25%) - Elevated
+  - Orange (45%) - High
+  - Red (15%) - Critical
+- **Milestones positioned below bar** with vertical connecting lines
+- **Hover on milestone icons** shows:
+  - Issue count at that milestone point
+  - Notification channels if notification was sent
+- **Example milestones**:
+  - Cluster Created (1 issue) → notification sent
+  - Event Renamed (45 issues) → no notification
+  - Issue Threshold Crossed (120 issues) → notification sent
+  - Severity → Critical (155 issues) → notification sent
+
 #### Side-by-Side Cards
 **Left: Recommended Investigation Steps**
 - Non-executable suggestions
-- Numbered list format
-- Examples: "Check deployment logs", "Review configuration changes"
+- 3 key steps with action + reason format
+- Examples: "Check deployment logs" (reason: "Errors started immediately after deployment")
 
-**Right: Affected Services**
+**Right: Impacted Services**
 - Service breakdown with actionable data:
   - Issue count per service
   - Error rate percentage
@@ -285,11 +515,29 @@ Vercel automatically deploys on every push to the `main` branch.
   - X-axis: Time
 
 **Bottom Section:**
-- **All Suppressed Issues Table**
-  - Scrollable table (max-height 500px)
-  - Shows all correlated alerts (e.g., 147 issues)
-  - Columns: Severity dot, Issue title, Service, Entity, Source, Time
-  - Badge: "147 issues correlated into 1 notification"
+- **Contributing Signals** (renamed from "All Suppressed Issues")
+  - **Filter Bar**:
+    - Primary dropdown: Golden signals / Components / Scope
+    - Secondary pills: Rules, Service, Severity (with dropdown overlays)
+  - **Scrollable table** (max-height 500px)
+  - Shows all correlated signals (e.g., 147 signals)
+  - Columns: Severity dot, Signal title, Type (Issue/Change Event), Service, Entity, Time
+  - **Clickable rows** open Issue Detail Modal
+  - Badge: "147 signals correlated into 1 notification"
+
+#### Issue Detail Modal
+- **80% width side modal** sliding from right
+- **Dark backdrop** with click-outside-to-close
+- **Comprehensive drill-down**:
+  - Issue header with severity, status, timestamps, current stage
+  - "Declare an incident" action button
+  - AI summary (Beta)
+  - Alert Events section with dual-panel view (list + detail)
+  - NRQL query display with time series chart
+  - Entity information and tags
+  - Issue timeline & event log
+  - Impacted entities section
+- **Tab navigation**: Overview / Root Cause Analysis
 
 ## 📈 Key Metrics & Data
 
@@ -360,20 +608,23 @@ correlation-v2/
 ├── src/
 │   ├── components/
 │   │   ├── Layout.jsx
-│   │   ├── Sidebar.jsx
+│   │   ├── Sidebar.jsx (Dashboard, Events, Settings)
 │   │   ├── TopBar.jsx (with theme toggle)
+│   │   ├── IssueDetailModal.jsx (side modal for signal drill-down)
 │   │   ├── OperationalEventsCards.jsx (horizontal card grid)
 │   │   ├── OperationalEventsTable.jsx (legacy)
-│   │   ├── TopAffectedEntitiesTable.jsx (simple table view)
+│   │   ├── TopAffectedEntitiesTable.jsx (HTML table view)
 │   │   ├── TopAffectedEntitiesPanel.jsx (legacy)
 │   │   ├── NoiseReductionPanel.jsx
 │   │   ├── RecentChangesCard.jsx
 │   │   └── ui/ (shadcn components with accessibility improvements)
 │   ├── pages/
-│   │   ├── Home.jsx
-│   │   └── EventDetail.jsx (with tabs)
+│   │   ├── Home.jsx (Dashboard - shows top 3 events)
+│   │   ├── Events.jsx (All operational events list)
+│   │   ├── EventDetail.jsx (with tabs, milestone widget, signal filtering)
+│   │   └── MilestoneVisualization.jsx (standalone page - kept for reference)
 │   ├── data/
-│   │   └── mockData.js
+│   │   └── mockData.js (includes signal types and correlation rules)
 │   ├── lib/
 │   │   └── utils.js
 │   ├── App.jsx
@@ -382,14 +633,15 @@ correlation-v2/
 ├── public/
 ├── index.html
 ├── package.json
-├── tailwind.config.js
+├── tailwind.config.js (with accent-purple added)
 └── vite.config.js
 ```
 
-## 🔄 Workflow Example
+## 🔄 Workflow Examples
 
+### Scenario 1: Responding to an Active Event (Dashboard)
 1. **User receives 1 notification** instead of 147 separate alerts
-2. **Opens dashboard** → sees "Deployment-related operational event detected" in table
+2. **Opens dashboard** → sees "Deployment-related operational event detected" in card grid
 3. **Clicks event** → navigates to detail page
 4. **Reviews Overview tab**:
    - Sees 147 issues suppressed into 1 notification (99.3% reduction)
@@ -400,12 +652,42 @@ correlation-v2/
 5. **Takes action**: Clicks "Investigate" or "Noise Reduction Settings"
 6. **(Future)** Switches to RCA tab for post-incident analysis
 
+### Scenario 2: Reviewing All Events (Events Page)
+1. **User navigates to Events page** via sidebar
+2. **Reviews stats bar** at top:
+   - Total events: 3
+   - Active events: 2
+   - Total issues correlated: 298
+   - Notifications sent: 6
+3. **Scans events table**:
+   - Sees all events with severity, issue count, status, and timestamps
+   - Identifies high-priority events (critical severity, active status)
+4. **Clicks any event row** → navigates to detailed drill-down
+
+### Scenario 3: Understanding Event Evolution (Milestone Visualization)
+1. **User views milestone visualization** to understand cluster maturity
+2. **Sees horizontal progress bar** with color-coded issue saturation:
+   - Blue → Yellow → Orange → Red (calm to critical)
+3. **Reviews milestones below bar**:
+   - Milestone 1: Cluster created (1 issue) → notification sent
+   - Milestone 2: Event renamed (45 issues) → no notification
+   - Milestone 3: Issue threshold crossed (120 issues) → notification sent
+   - Milestone 4: Severity upgraded to critical (155 issues) → notification sent
+4. **Understands cluster behavior**: Multiple milestones in orange block show most time spent in "High" saturation phase before becoming critical
+
 ## 📝 Notes
 
 - **Mock Data**: All data is currently mocked in `src/data/mockData.js`
 - **No Backend**: This is a frontend prototype
 - **Stabilization Window**: 15-60 second observation period before notification
 - **Cluster Activation**: Triggers when thresholds met (≥20 issues, >85% confidence, etc.)
+- **Terminology**:
+  - **Cluster** (internal) = **Operational Event** (user-facing)
+  - **Milestones** = key evolution points in cluster maturity where actions are triggered
+  - Notifications are **actions within milestones**, not separate milestones
+- **Development Tools**:
+  - **Clasp-it MCP**: Chrome extension integration for visual debugging and UI fixes
+  - Allows clicking page elements to send context directly to Claude Code for precise fixes
 
 ---
 

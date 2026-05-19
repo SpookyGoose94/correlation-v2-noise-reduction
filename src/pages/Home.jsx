@@ -34,25 +34,25 @@ export default function Home() {
             </div>
             <div className="rounded-lg bg-accent-red/10 px-3 py-1">
               <span className="text-sm font-semibold text-accent-red">
-                {operationalEvents.length} active events
+                Top {Math.min(3, operationalEvents.length)} of {operationalEvents.length} events
               </span>
             </div>
           </div>
 
-          <OperationalEventsCards events={operationalEvents} />
+          <OperationalEventsCards events={operationalEvents.slice(0, 3)} />
         </section>
 
-        {/* Section 2: Top Affected Entities */}
+        {/* Section 2: Top Affected Services */}
         <section>
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="flex items-center gap-2 text-xl font-semibold text-text-primary">
                   <AlertTriangle className="h-5 w-5 text-accent-orange" />
-                  Top Affected Entities
+                  Top Affected Services
                 </h2>
                 <p className="mt-1 text-sm text-text-muted">
-                  Entities with the highest suppression activity in the last 7 days
+                  Services with the highest suppression activity in the last 7 days
                 </p>
               </div>
             </div>
