@@ -2,6 +2,22 @@
 
 A complete reimagining of the correlation platform focused on **real-time noise reduction** as the primary value proposition.
 
+## ✨ Recent Updates
+
+### UI/UX Improvements (Latest)
+- **Redesigned "What Needs Attention" section**: Switched from table to compact horizontal card grid with:
+  - Visual hierarchy with clear headings and data points
+  - Bar charts showing weekly trends (7 days: Mon-Sun)
+  - Service name badges for quick scanning
+  - Reduced padding and spacing for better viewport utilization
+- **Simplified "Top Affected Entities"**: Converted to clean table format for improved scannability
+- **Badge Accessibility Enhancements**:
+  - Fixed light mode contrast issues for all badge types
+  - Service name badges now have visible grey backgrounds
+  - Severity badges use optimized text colors for readability
+  - Meets WCAG accessibility standards in both light and dark modes
+- **Data Improvements**: Weekly trend charts now show realistic patterns (not just ascending values)
+
 ## 🎯 Core Philosophy Shift
 
 ### From V1 to V2:
@@ -26,41 +42,85 @@ npm run dev
 
 Open [http://localhost:5174](http://localhost:5174) (or the port shown in terminal)
 
+## 🚀 Deploying to Vercel
+
+The app is deployed at: **https://correlation-v2-noise-reduction.vercel.app**
+
+### Quick Deploy
+
+Use the deployment script to push changes:
+
+```bash
+./deploy.sh "Your commit message"
+```
+
+Or without a message (uses timestamp):
+
+```bash
+./deploy.sh
+```
+
+This will:
+1. Add all changes to git
+2. Create a commit with your message
+3. Push to GitHub
+4. Trigger automatic Vercel deployment (~1-2 minutes)
+
+### Manual Deploy
+
+```bash
+git add .
+git commit -m "Your message"
+git push
+```
+
+Vercel automatically deploys on every push to the `main` branch.
+
 ## 🎨 Features
 
 ### Theme Support
 - **Dark Mode** (default)
 - **Light Mode** - Toggle via sun/moon icon in top bar
 - Theme preference persisted in localStorage
+- **Accessibility-first badges**:
+  - High contrast text colors in both light and dark modes
+  - Service name badges: grey background with dark text
+  - Severity badges: colored backgrounds with optimized text contrast
+    - Critical (red): light red background with dark red text
+    - High (yellow): light yellow background with dark yellow text
+  - Meets WCAG accessibility standards
 
 ### Responsive Design
 - Built with Tailwind CSS v3.4.17
 - CSS variables for easy theming
 - Mobile-friendly layout
+- Compact card designs optimized for viewport visibility
 
 ## 📊 Dashboard Structure
 
 ### 4-Section Layout:
 
 #### 1. What Needs Attention
-- **Scannable table view** showing operational events
-- Key columns:
-  - Severity indicators (colored dots)
-  - Event title and description
-  - **Noise Reduction** (prominently highlighted in green)
-  - Services count
-  - Confidence percentage
-  - Time detected
-- Clickable rows navigate to event detail
+- **Compact horizontal card grid** (3-column layout on desktop)
+- Each card displays:
+  - Event title (truncated if needed)
+  - Service count and severity badges
+  - **Issues Suppressed** - large metric showing noise reduction impact
+  - **Weekly Trend** - bar chart with 7 days of data (Mon-Sun)
+  - **Top Impacted Services** - grey badge pills for quick scanning
+- Clickable cards navigate to event detail
+- Hover effect with blue border highlight
 
 #### 2. Top Affected Entities
-- Top 3 entities with highest suppression activity (7-day window)
-- For each entity:
-  - Total suppressions count
-  - Weekly trend bar chart
-  - Top impacted services
-  - Severity level
-  - Entity count
+- **Simple table format** for maximum scannability
+- Displays top 3 entities with highest suppression activity (7-day window)
+- Table columns:
+  - Entity name with server icon
+  - Service badge
+  - Severity badge (critical/high)
+  - Top Services (up to 3 badges)
+  - Total Suppressions count with trending icon
+- Hover effect on rows
 
 #### 3. What Changed Recently
 - 3 cards showing emerging patterns
@@ -208,11 +268,13 @@ correlation-v2/
 │   │   ├── Layout.jsx
 │   │   ├── Sidebar.jsx
 │   │   ├── TopBar.jsx (with theme toggle)
-│   │   ├── OperationalEventsTable.jsx
+│   │   ├── OperationalEventsCards.jsx (horizontal card grid)
+│   │   ├── OperationalEventsTable.jsx (legacy)
+│   │   ├── TopAffectedEntitiesTable.jsx (simple table view)
+│   │   ├── TopAffectedEntitiesPanel.jsx (legacy)
 │   │   ├── NoiseReductionPanel.jsx
 │   │   ├── RecentChangesCard.jsx
-│   │   ├── TopAffectedEntitiesPanel.jsx
-│   │   └── ui/ (shadcn components)
+│   │   └── ui/ (shadcn components with accessibility improvements)
 │   ├── pages/
 │   │   ├── Home.jsx
 │   │   └── EventDetail.jsx (with tabs)
