@@ -4,7 +4,293 @@ A complete reimagining of the correlation platform focused on **real-time noise 
 
 ## ✨ Recent Updates
 
-### Collapsible Dashboard Sections - May 19, 2026 (Latest)
+### UI Polish & Correlation Rules Visibility - May 26, 2026 (Latest)
+
+#### Contributing Correlation Rules Section
+- **New section added to EventDetail drill-down page** showing which correlation rules contributed to each operational event
+- **Stacked ranking display** from most contributing to least contributing rule
+- **Rule details include**:
+  - Rule name (e.g., "Deployment Correlation", "Service Dependency Chain", "Error Pattern Matching")
+  - Description explaining what the rule does
+  - Issue count badge showing how many issues each rule correlated
+  - Percentage contribution with visual progress bar
+- **Positioned between** "Impacted Services" and "Noise Reduction Impact" sections
+- **Example rules**:
+  - Deployment Correlation: 60.5% (89 issues) - Correlates issues occurring within 15 minutes of deployment
+  - Service Dependency Chain: 25.9% (38 issues) - Groups issues across services with known dependencies
+  - Error Pattern Matching: 13.6% (20 issues) - Matches issues with similar error signatures
+
+#### Realistic Noise Reduction Metrics
+- **Updated calculation formula** to show more relatable noise reduction percentage
+- **New metrics**:
+  - Total signals: 3,142
+  - Notifications sent: 251 (instead of just 10 operational events)
+  - Notifications consolidated: 2,891
+  - **Reduction percentage: 92.0%** (was 99.7%)
+  - Avg notifications per event: 25
+- **Formula**: `(Total signals - Notifications sent) / Total signals × 100`
+- More believable and relatable value proposition while still demonstrating significant impact
+
+#### Clean UI Design - Icons Removed
+- **Removed all decorative icons** from section headings and card titles throughout the application
+- **Affected pages**:
+  - EventDetail.jsx: Removed icons from "Recommended investigation avenues", "Impacted Services", "Contributing Correlation Rules", "Noise Reduction Impact"
+  - Events.jsx: Removed Activity icon from "Operational Events" page heading
+  - MilestoneVisualization.jsx: Removed Milestone icon from page heading
+- **Cleaner, more professional appearance** with text-only headings
+- **Functional icons preserved**: Dropdowns (ChevronDown), menus (MoreVertical), and content-specific icons (Server in service cards)
+- **Removed unused icon imports**: CheckCircle, TrendingDown, Activity, Milestone
+
+#### Technical Changes
+- **Updated**: `src/pages/EventDetail.jsx`
+  - Added Contributing Correlation Rules card with progress bars and badges
+  - Removed icon components from CardTitle elements
+  - Cleaned up unused icon imports
+- **Updated**: `src/data/mockData.js`
+  - Added `contributingRules` array to operational events (event-1, event-2)
+  - Updated noise reduction metrics with realistic values (92% reduction, 251 notifications)
+  - Added notificationsSent field for accurate calculations
+- **Updated**: `src/pages/Events.jsx`, `src/pages/MilestoneVisualization.jsx`
+  - Removed decorative icons from page headings
+  - Cleaned up unused imports
+
+### Onboarding Flow Implementation - May 25, 2026
+
+#### Complete Onboarding System
+A comprehensive multi-step onboarding flow has been implemented to guide users through correlation and notification suppression setup. This replaces the original "out-of-the-box" approach where the system would automatically configure correlation rules.
+
+#### Onboarding Landing Page
+- **Hero section** with value proposition messaging
+  - Headline: "See your correlated alerts in minutes"
+  - Description highlighting 99% noise reduction and faster troubleshooting
+  - "Set up correlation" CTA button to start the flow
+  - "See our docs" link for additional resources
+- **Dashboard mockup preview** showing what users will see after setup
+- **Sidebar navigation** remains accessible during onboarding
+- **Located at**: `/onboarding` route with "Onboarding" menu item (Rocket icon)
+
+#### Multi-Step Configuration Flow
+**Step 1: Data Source Configuration**
+- **Account IDs** - Text input for comma-separated account IDs to correlate
+- **Teams** - Text input for team names
+- **Tags** - Text input for tags to include in correlation
+- **Alert Policies** - Checkbox list to select which policies to correlate:
+  - Payment Service Policy
+  - Checkout Service Policy
+  - Auth Service Policy
+  - Database Policy
+- Users define the scope of data to be correlated
+
+**Step 2: Correlation Notifications & Suppression**
+- **"Notify" section** displays configured destinations:
+  - Shows destination type icon (Slack, Email, PagerDuty, etc.)
+  - Displays channel/recipient information
+  - Remove button for each destination
+- **"Add channel" section** with available destinations:
+  - Slack, Email, PagerDuty, Webhook, Jira, Microsoft Teams
+  - Grid layout with hover effects
+  - Click to open destination-specific configuration modal
+- **Side modal overlay** (600px width, slides in from right):
+  - Destination/workspace dropdown selection
+  - Channel/email input field
+  - Message template textarea with variable support (`{cluster_name}`, `{issue_count}`, `{severity}`)
+  - Platform-specific options (e.g., Slack thread broadcast checkbox)
+  - Save/Cancel buttons
+  - "Send test notification" button
+- **Multi-destination workflow**:
+  - Users can configure multiple destinations
+  - Each destination gets its own notification when clusters are created
+  - Configured destinations appear as cards in "Notify" section
+- **Divider line** separates notification setup from suppression section
+- **"Suppress notification noise" toggle** - Main control to enable/disable suppression
+- **Destination suppression table** (when enabled):
+  - Shows all active destination/channel combinations from existing notification workflows
+  - Columns: Checkbox | Destination icon/name | Channel | Total Notifications (7d)
+  - Multi-select functionality with "select all" header checkbox
+  - Row click to toggle selection
+  - Hover effects for better UX
+- **Suppression summary card**:
+  - Shows count of selected destinations
+  - Explains that individual alerts from correlated issues won't be sent to selected channels
+  - Green accent styling for positive reinforcement
+- **Logic**: When an issue is correlated into a cluster, individual alert notifications are suppressed to selected destinations. Only the cluster notification (configured above in this step) is sent.
+
+**Step 3: Review Configuration**
+- **Data Sources summary card** - Shows count of selected policies, teams, and tags
+- **Cluster Notifications summary card** - Lists all configured destinations with channels
+- **Notification Suppression summary card** - Shows enabled/disabled status and suppression count
+- **Final confirmation message** with 20-minute setup time warning
+- **"Complete Setup" button** to finalize configuration
+
+#### Loading State & Completion
+- **Full-page loading screen** after clicking "Complete Setup"
+- **Animated spinner** with brand colors
+- **Status message**: "Setting up your correlations configuration..."
+- **Time warning**: "This may take up to 20 minutes. Please don't close this page."
+- **Auto-redirect** to main dashboard after 3 seconds (simulated)
+
+#### Progress Indicator
+- **Vertical stepper** positioned between sidebar menu and main content
+- **Clean, compact design** with minimal spacing between steps
+- **Active step highlighting** with green circular badge
+- **Completed steps** marked with white checkmark on green background
+- **Pending steps** shown as outlined circles with gray styling
+- **Connecting lines** between steps (thin vertical lines)
+- **Step labels**: Data Source, Notifications, Review
+- **Stepper persists** throughout the multi-step flow (not on landing page)
+
+#### Key Concepts Implemented
+
+**Alert Policy Hierarchy**:
+- Issues (Alerts) → belong to → Alert Policies → assigned to → Notification Workflows
+- Each notification workflow defines destinations, channels, and message formatting
+- When an issue fires, it follows the notification workflow assigned to its alert policy
+
+**Correlation Logic**:
+- 50 issues correlated into 1 cluster = send 1 notification (not 50)
+- Cluster notification goes to destinations configured in Step 2
+- Individual alert notifications are suppressed to selected destinations (Step 3)
+- Clusters accumulate issues over time without spamming notifications
+- Future: Milestones can trigger additional cluster notifications (severity upgrade, threshold crossed)
+
+**Suppression vs. Cluster Notifications**:
+- **Cluster notifications** (Step 2): Where the "1 consolidated notification" gets sent
+- **Suppression** (Step 3): Which existing alert notification channels to silence when issues are part of a cluster
+- Example: Cluster notification goes to `#correlations`, suppression prevents 50 individual alerts to `#alerts` channel
+
+#### Technical Implementation
+- **New page**: `src/pages/Onboarding.jsx`
+- **Route added**: `/onboarding` in `src/App.jsx`
+- **Sidebar item**: "Onboarding" with Rocket icon in `src/components/Sidebar.jsx`
+- **Layout structure**:
+  - Landing page: Wrapped in Layout component (shows sidebar menu)
+  - Multi-step flow: Three-column layout
+    - Left: Sidebar menu (from Layout component, 56px/14rem width)
+    - Center: Vertical stepper (56px/14rem width, border-right)
+    - Right: Main content area (flex-1, takes remaining space)
+  - Stepper design: Compact circles (h-7 w-7), tight spacing (space-y-1), short connecting lines (h-6)
+- **State management**:
+  - `currentStep` - Tracks user progress (0 = landing, 1-3 = steps)
+  - `formData.configuredDestinations` - Array of configured notification destinations
+  - `formData.suppressedChannels` - Array of selected channels for suppression
+  - `showDestinationModal` - Controls side modal visibility
+  - `tempDestination` - Holds in-progress destination configuration
+- **Components**:
+  - Landing page with Layout wrapper
+  - Multi-step form with conditional rendering
+  - Vertical stepper with green active/completed states and gray pending states
+  - Side modal overlay with backdrop (600px width)
+  - Loading state screen
+- **Navigation**: Back/Next buttons with proper step validation
+
+#### Demo & Stakeholder Workflow
+- **"Onboarding" menu item** in sidebar allows repeated access to flow
+- Useful for demoing the complete setup experience to stakeholders
+- Can trigger onboarding anytime without requiring first-time-user state
+- All steps can be walked through independently
+
+#### Files Changed
+- **Created**: `src/pages/Onboarding.jsx` (complete onboarding flow)
+- **Updated**: `src/App.jsx` (added `/onboarding` route)
+- **Updated**: `src/components/Sidebar.jsx` (added Onboarding menu item with Rocket icon)
+
+### Alert Preferences & Event Prioritization - May 21, 2026
+
+#### Alert Preferences Side Panel
+- **New "Preferences" button** added to "What Needs Attention" section header
+- **Side panel modal** that slides in from the right with full page height
+- **Service Prioritization**:
+  - Checkbox list for priority services (payment, checkout, auth, inventory, shipping)
+  - Events from selected services will appear first on the dashboard
+- **Alarming Criteria Configuration**:
+  - Granular control over which conditions trigger dashboard alerts
+  - Options include:
+    - More than 50 issues in 30 mins
+    - All issues are for only one service
+    - Deployment correlation detected
+    - Error rate spike > 50%
+    - Multiple services impacted
+    - Critical severity events only
+- **Smooth slide-in animation** from right edge of screen
+- **Dark backdrop** with click-outside-to-close functionality
+
+#### Event Card Stack Ranking
+- **Expanded from 3 to 6 event cards** (2 rows of 3 columns)
+- **Smart severity-based sorting**: All cards now ranked by severity across the entire grid
+  - Critical events appear first (positions 1-4)
+  - High severity events follow (positions 5-6)
+  - Medium severity events excluded from dashboard
+- **Badge updated** to show "Top 6 of X events"
+- Eliminates confusing per-row ranking (previously had critical at positions 1 and 4)
+
+#### EventDetail Page Enhancements
+- **Recommended investigation avenues** (renamed from "Investigation Steps"):
+  - Added parent CTA button: "Initiate with SRE agent"
+  - Added three-dot menu to each investigation step
+  - Dropdown option: "Check with SRE agent"
+- **Impacted Services** card:
+  - Added parent CTA button: "Investigate"
+  - Added three-dot menu to each service card
+  - Dropdown option: "Investigate" (per-service)
+- **Improved dropdown positioning**: Dropdowns now appear directly next to their trigger buttons for better UX
+
+#### Milestone Terminology Updates
+- **Renamed** "Cluster Created" → **"Pattern Initiated"**
+  - Better reflects the beginning of the correlation pattern detection
+  - More user-friendly terminology aligned with operational language
+
+#### Technical Changes
+- **Updated `src/pages/Home.jsx`**:
+  - Added useState for preferences modal
+  - Implemented severity-based sorting with `.sort()` filtering critical first
+  - Added Settings icon import from lucide-react
+  - Modal positioned outside Layout to prevent z-index conflicts
+- **Updated `src/pages/EventDetail.jsx`**:
+  - Added MoreVertical icon for three-dot menus
+  - Implemented dropdown state management for investigation and service menus
+  - Added parent CTA buttons to both cards
+  - Fixed dropdown positioning with `relative` class on parent containers
+  - Updated milestone data with new "Pattern Initiated" label
+  - Renamed card title to "Recommended investigation avenues"
+- **Created comprehensive preferences UI**:
+  - Service priority checkboxes with hover effects
+  - Alarming criteria checkboxes with default selections
+  - Cancel/Save buttons with proper styling
+
+### Operational Events List Redesign - May 19, 2026
+
+#### Simplified & Cleaner Event Cards
+- **Removed weekly trend graphs** from list view for cleaner, more scannable UI
+- **Highlighted actionable criteria** as the primary focus:
+  - Blue background box with left accent border
+  - Criteria text in blue for emphasis (e.g., "Deployment correlation detected")
+  - Clear explanation: "A total of 147 issues occurred in the last 30 mins"
+- **Streamlined metrics row**:
+  - Shows Issues and Notifications side by side
+  - Removed chart clutter for faster scanning
+- **Better visual hierarchy**:
+  - Title + severity + mute button on first line
+  - Actionable criteria prominently highlighted on second line
+  - Metrics and services on subsequent lines
+
+#### Dashboard 2 Cleanup
+- **Removed duplicate "What Needs Attention" section** from Dashboard 2
+- Dashboard 2 now shows:
+  1. Notification Reduction Summary (top)
+  2. Recent Critical Events list (bottom)
+- Eliminated redundancy between horizontal cards and vertical list
+
+#### Technical Changes
+- Updated `src/components/OperationalEventsList.jsx`:
+  - Removed AreaChart/BarChart imports
+  - Added highlighted blue box for actionable criteria
+  - Simplified metrics display (no chart rendering)
+  - Better spacing and alignment
+- Updated `src/pages/Dashboard2.jsx`:
+  - Removed OperationalEventsCards2 section
+  - Kept only NoiseReductionPanel2 and OperationalEventsList
+
+### Collapsible Dashboard Sections - May 19, 2026
 
 #### What Changed Recently Section - Collapsible
 - **Made "What Changed Recently" section collapsible** to reduce dashboard clutter
@@ -415,8 +701,9 @@ The application has 3 main sections accessible via the sidebar:
   - Blast radius expansions
 
 #### 4. Notification Reduction Summary ⭐ (THE HERO)
-- **Hero Metric**: 99.6% noise reduction
-- 2,847 signals → 12 operational events
+- **Hero Metric**: 92.0% noise reduction
+- 3,142 signals → 10 operational events → 251 notifications sent
+- 2,891 notifications consolidated
 - Weekly trend chart
 - Orchestration metrics:
   - Avg stabilization window: 38s
@@ -525,11 +812,24 @@ The application has 3 main sections accessible via the sidebar:
   - Top issue type
   - Entity count
 
+#### Contributing Correlation Rules
+- **Shows which rules identified and grouped issues** into this operational event
+- **Stacked ranking** from most contributing to least contributing
+- **Each rule displays**:
+  - Rule name with description
+  - Issue count badge
+  - Percentage contribution (both numeric and visual progress bar)
+- **Example rules**:
+  - Deployment Correlation: 60.5% (89 issues)
+  - Service Dependency Chain: 25.9% (38 issues)
+  - Error Pattern Matching: 13.6% (20 issues)
+- **Clean card design** without decorative icons
+
 #### Noise Reduction Impact (Unified Card)
 **Top Section:**
 - **Left**: Three key metrics (stacked vertically)
   - Issues Suppressed (e.g., 147)
-  - Reduction Percentage (e.g., 99.3%)
+  - Reduction Percentage (calculated based on notifications sent vs. would-be notifications)
   - Stabilization Window (e.g., 45s)
 - **Right**: Issue Accumulation Timeline
   - Line chart showing how issues accumulated over time
@@ -564,10 +864,13 @@ The application has 3 main sections accessible via the sidebar:
 ## 📈 Key Metrics & Data
 
 ### Noise Reduction Metrics
-- **Total Noise Reduction**: 99.6%
-- **Notifications Consolidated**: 2,835 (out of 2,847 signals)
-- **Operational Events Created**: 12
-- **Avg Notifications Per Event**: 236
+- **Total Noise Reduction**: 92.0%
+- **Total Signals**: 3,142
+- **Notifications Sent**: 251
+- **Notifications Consolidated**: 2,891 (out of 3,142 signals)
+- **Operational Events Created**: 10
+- **Avg Notifications Per Event**: 25
+- **Calculation**: (3,142 - 251) / 3,142 × 100 = 92.0%
 
 ### Orchestration Performance
 - **Avg Stabilization Window**: 38 seconds

@@ -71,6 +71,7 @@ export const operationalEvents = [
     confidence: 94,
     stabilizationWindow: 45, // seconds
     notificationsSent: 3,
+    actionableCriteria: 'Deployment correlation detected',
     metrics: {
       impactedUsers: '12.3K',
       failedTransactions: 3420,
@@ -117,6 +118,26 @@ export const operationalEvents = [
         reason: 'Manifest changes may reveal unexpected dependencies or resource constraints'
       }
     ],
+    contributingRules: [
+      {
+        name: 'Deployment Correlation',
+        description: 'Correlates issues that occur within 15 minutes of a deployment event',
+        issueCount: 89,
+        percentage: 60.5
+      },
+      {
+        name: 'Service Dependency Chain',
+        description: 'Groups issues across services with known dependencies',
+        issueCount: 38,
+        percentage: 25.9
+      },
+      {
+        name: 'Error Pattern Matching',
+        description: 'Matches issues with similar error signatures and stack traces',
+        issueCount: 20,
+        percentage: 13.6
+      }
+    ],
     suppressedIssues: generateSuppressedIssues(147, ['checkout', 'payment', 'auth'], 'critical'),
     timeSeriesData: [
       { time: 'Mon', issues: 18 },
@@ -140,6 +161,7 @@ export const operationalEvents = [
     confidence: 87,
     stabilizationWindow: 30,
     notificationsSent: 2,
+    actionableCriteria: 'Average latency: 2.4s',
     metrics: {
       avgLatency: '2.4s',
       p95Latency: '8.7s',
@@ -186,6 +208,26 @@ export const operationalEvents = [
       'Monitor database CPU and memory utilization',
       'Consider scaling database connection pool size if needed'
     ],
+    contributingRules: [
+      {
+        name: 'Resource Saturation Pattern',
+        description: 'Identifies cascading failures due to resource exhaustion',
+        issueCount: 52,
+        percentage: 58.4
+      },
+      {
+        name: 'Latency Spike Detection',
+        description: 'Groups issues with abnormal response time increases',
+        issueCount: 24,
+        percentage: 27.0
+      },
+      {
+        name: 'Service Dependency Chain',
+        description: 'Groups issues across services with known dependencies',
+        issueCount: 13,
+        percentage: 14.6
+      }
+    ],
     suppressedIssues: generateSuppressedIssues(89, ['database', 'api-gateway', 'user-service', 'order-service'], 'high'),
     timeSeriesData: [
       { time: 'Mon', issues: 15 },
@@ -209,6 +251,7 @@ export const operationalEvents = [
     confidence: 91,
     stabilizationWindow: 60,
     notificationsSent: 1,
+    actionableCriteria: 'Failure rate: 42%',
     metrics: {
       failureRate: '42%',
       affectedOrders: '1.2K',
@@ -270,6 +313,7 @@ export const operationalEvents = [
     confidence: 96,
     stabilizationWindow: 40,
     notificationsSent: 2,
+    actionableCriteria: 'DB query spike: +340%',
     metrics: {
       cacheHitRate: '12%',
       dbQueryIncrease: '340%',
@@ -339,6 +383,7 @@ export const operationalEvents = [
     confidence: 89,
     stabilizationWindow: 35,
     notificationsSent: 2,
+    actionableCriteria: 'Login failure rate: 34%',
     metrics: {
       loginFailureRate: '34%',
       affectedUsers: '8.7K',
@@ -395,6 +440,316 @@ export const operationalEvents = [
       { time: 'Sat', issues: 58 },
       { time: 'Sun', issues: 76 }
     ]
+  },
+  {
+    id: 'event-6',
+    title: 'API rate limit threshold exceeded',
+    description: 'Multiple services hitting rate limits causing cascading failures',
+    severity: 'medium',
+    affectedServices: ['api-gateway', 'search-service', 'recommendation-engine'],
+    consolidatedNotifications: 43,
+    timestamp: hoursAgo(8),
+    status: 'active',
+    confidence: 82,
+    stabilizationWindow: 25,
+    notificationsSent: 1,
+    actionableCriteria: 'Issue spike: +67% in last 2 hours',
+    metrics: {
+      requestsThrottled: '15.2K',
+      affectedEndpoints: 23,
+      avgRetryAttempts: 4.2,
+      successRate: '72%'
+    },
+    serviceBreakdown: [
+      {
+        name: 'api-gateway',
+        issueCount: 22,
+        errorRate: '28%',
+        severity: 'medium',
+        topIssue: 'API endpoint failure in api-gateway',
+        entities: ['api-gateway-prod-1', 'api-gateway-prod-2']
+      },
+      {
+        name: 'search-service',
+        issueCount: 13,
+        errorRate: '19%',
+        severity: 'medium',
+        topIssue: 'Service timeout in search-service',
+        entities: ['search-prod-1']
+      },
+      {
+        name: 'recommendation-engine',
+        issueCount: 8,
+        errorRate: '12%',
+        severity: 'medium',
+        topIssue: 'Response time exceeded in recommendation-engine',
+        entities: ['recommendation-prod-2']
+      }
+    ],
+    recommendedActions: [
+      'Review API rate limit configurations and current usage patterns',
+      'Check for any automated scripts or bots causing excessive requests',
+      'Implement request queuing or backoff strategies',
+      'Consider scaling rate limit thresholds based on demand'
+    ],
+    suppressedIssues: generateSuppressedIssues(43, ['api-gateway', 'search-service', 'recommendation-engine'], 'medium'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 5 },
+      { time: 'Tue', issues: 8 },
+      { time: 'Wed', issues: 12 },
+      { time: 'Thu', issues: 15 },
+      { time: 'Fri', issues: 21 },
+      { time: 'Sat', issues: 32 },
+      { time: 'Sun', issues: 43 }
+    ]
+  },
+  {
+    id: 'event-7',
+    title: 'Memory leak detected in order processing',
+    description: 'Order service memory usage trending upward causing performance degradation',
+    severity: 'high',
+    affectedServices: ['order-service', 'inventory', 'notification-service'],
+    consolidatedNotifications: 58,
+    timestamp: hoursAgo(12),
+    status: 'investigating',
+    confidence: 91,
+    stabilizationWindow: 50,
+    notificationsSent: 2,
+    actionableCriteria: 'Memory usage: 94%',
+    metrics: {
+      memoryUsage: '94%',
+      avgResponseTime: '4.8s',
+      failedOrders: 847,
+      gcPausesPerMin: 34
+    },
+    serviceBreakdown: [
+      {
+        name: 'order-service',
+        issueCount: 35,
+        errorRate: '31%',
+        severity: 'high',
+        topIssue: 'Memory threshold exceeded in order-service',
+        entities: ['order-prod-1', 'order-prod-3']
+      },
+      {
+        name: 'inventory',
+        issueCount: 15,
+        errorRate: '16%',
+        severity: 'medium',
+        topIssue: 'Service timeout in inventory',
+        entities: ['inventory-prod-2']
+      },
+      {
+        name: 'notification-service',
+        issueCount: 8,
+        errorRate: '9%',
+        severity: 'medium',
+        topIssue: 'Response time exceeded in notification-service',
+        entities: ['notification-prod-1']
+      }
+    ],
+    recommendedActions: [
+      'Analyze heap dumps to identify memory leak sources',
+      'Review recent code changes for potential memory leaks',
+      'Monitor garbage collection patterns and frequency',
+      'Consider restarting affected instances with increased memory limits'
+    ],
+    suppressedIssues: generateSuppressedIssues(58, ['order-service', 'inventory', 'notification-service'], 'high'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 8 },
+      { time: 'Tue', issues: 12 },
+      { time: 'Wed', issues: 18 },
+      { time: 'Thu', issues: 24 },
+      { time: 'Fri', issues: 35 },
+      { time: 'Sat', issues: 47 },
+      { time: 'Sun', issues: 58 }
+    ]
+  },
+  {
+    id: 'event-8',
+    title: 'Network connectivity issues in us-east region',
+    description: 'Intermittent network packet loss causing service disruptions',
+    severity: 'critical',
+    affectedServices: ['all-services-us-east'],
+    consolidatedNotifications: 203,
+    timestamp: hoursAgo(18),
+    status: 'resolved',
+    confidence: 98,
+    stabilizationWindow: 55,
+    notificationsSent: 4,
+    actionableCriteria: 'Issue spike: +450% in last hour',
+    metrics: {
+      packetLoss: '8.3%',
+      affectedRequests: '127K',
+      avgLatency: '1.2s',
+      impactedRegions: 1
+    },
+    serviceBreakdown: [
+      {
+        name: 'payment',
+        issueCount: 68,
+        errorRate: '52%',
+        severity: 'critical',
+        topIssue: 'Connection failed in payment',
+        entities: ['payment-us-east-1', 'payment-us-east-2']
+      },
+      {
+        name: 'database',
+        issueCount: 54,
+        errorRate: '41%',
+        severity: 'critical',
+        topIssue: 'Connection failed in database',
+        entities: ['database-us-east-1']
+      },
+      {
+        name: 'api-gateway',
+        issueCount: 81,
+        errorRate: '63%',
+        severity: 'critical',
+        topIssue: 'Service timeout in api-gateway',
+        entities: ['api-us-east-1', 'api-us-east-3']
+      }
+    ],
+    recommendedActions: [
+      'Contact cloud provider about network connectivity issues',
+      'Review network topology and routing configurations',
+      'Consider failover to alternate region if issues persist',
+      'Monitor network metrics and packet loss rates'
+    ],
+    suppressedIssues: generateSuppressedIssues(203, ['payment', 'database', 'api-gateway'], 'critical'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 12 },
+      { time: 'Tue', issues: 15 },
+      { time: 'Wed', issues: 18 },
+      { time: 'Thu', issues: 23 },
+      { time: 'Fri', issues: 67 },
+      { time: 'Sat', issues: 152 },
+      { time: 'Sun', issues: 203 }
+    ]
+  },
+  {
+    id: 'event-9',
+    title: 'Third-party API degradation impacting checkout',
+    description: 'Shipping calculation API timeouts causing checkout failures',
+    severity: 'high',
+    affectedServices: ['checkout', 'shipping-service', 'cart'],
+    consolidatedNotifications: 71,
+    timestamp: daysAgo(1),
+    status: 'active',
+    confidence: 88,
+    stabilizationWindow: 45,
+    notificationsSent: 2,
+    actionableCriteria: 'Timeout rate: 38%',
+    metrics: {
+      apiTimeoutRate: '38%',
+      abandonedCarts: '3.4K',
+      avgCheckoutTime: '28s',
+      affectedOrders: 2145
+    },
+    serviceBreakdown: [
+      {
+        name: 'checkout',
+        issueCount: 38,
+        errorRate: '38%',
+        severity: 'high',
+        topIssue: 'Service timeout in checkout',
+        entities: ['checkout-prod-1', 'checkout-prod-2']
+      },
+      {
+        name: 'shipping-service',
+        issueCount: 23,
+        errorRate: '29%',
+        severity: 'high',
+        topIssue: 'API endpoint failure in shipping-service',
+        entities: ['shipping-prod-1']
+      },
+      {
+        name: 'cart',
+        issueCount: 10,
+        errorRate: '12%',
+        severity: 'medium',
+        topIssue: 'Response time exceeded in cart',
+        entities: ['cart-prod-3']
+      }
+    ],
+    recommendedActions: [
+      'Check third-party shipping API status and response times',
+      'Implement fallback shipping calculation logic',
+      'Review timeout configurations for external API calls',
+      'Consider caching shipping rate responses when possible'
+    ],
+    suppressedIssues: generateSuppressedIssues(71, ['checkout', 'shipping-service', 'cart'], 'high'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 9 },
+      { time: 'Tue', issues: 14 },
+      { time: 'Wed', issues: 18 },
+      { time: 'Thu', issues: 27 },
+      { time: 'Fri', issues: 42 },
+      { time: 'Sat', issues: 58 },
+      { time: 'Sun', issues: 71 }
+    ]
+  },
+  {
+    id: 'event-10',
+    title: 'Database replica lag causing stale data reads',
+    description: 'Replication delay between primary and replica databases',
+    severity: 'medium',
+    affectedServices: ['database', 'reporting', 'analytics'],
+    consolidatedNotifications: 39,
+    timestamp: daysAgo(2),
+    status: 'resolved',
+    confidence: 84,
+    stabilizationWindow: 30,
+    notificationsSent: 1,
+    actionableCriteria: 'Replication lag: 12.4s',
+    metrics: {
+      replicationLag: '12.4s',
+      staleReadCount: '8.2K',
+      dataInconsistencies: 234,
+      queryFailures: 89
+    },
+    serviceBreakdown: [
+      {
+        name: 'database',
+        issueCount: 21,
+        errorRate: '22%',
+        severity: 'medium',
+        topIssue: 'Database query timeout',
+        entities: ['database-replica-2', 'database-replica-3']
+      },
+      {
+        name: 'reporting',
+        issueCount: 12,
+        errorRate: '14%',
+        severity: 'medium',
+        topIssue: 'Response time exceeded in reporting',
+        entities: ['reporting-prod-1']
+      },
+      {
+        name: 'analytics',
+        issueCount: 6,
+        errorRate: '8%',
+        severity: 'medium',
+        topIssue: 'API endpoint failure in analytics',
+        entities: ['analytics-prod-2']
+      }
+    ],
+    recommendedActions: [
+      'Check replication configuration and network latency',
+      'Review database load and query patterns on primary',
+      'Monitor replica lag metrics and set up alerting',
+      'Consider adding more replicas to distribute read load'
+    ],
+    suppressedIssues: generateSuppressedIssues(39, ['database', 'reporting', 'analytics'], 'medium'),
+    timeSeriesData: [
+      { time: 'Mon', issues: 4 },
+      { time: 'Tue', issues: 7 },
+      { time: 'Wed', issues: 11 },
+      { time: 'Thu', issues: 15 },
+      { time: 'Fri', issues: 22 },
+      { time: 'Sat', issues: 31 },
+      { time: 'Sun', issues: 39 }
+    ]
   }
 ]
 
@@ -405,10 +760,11 @@ export const notificationReduction = {
   currentPeriod: {
     label: 'Last 24 Hours',
     totalSignals: 3142,
-    operationalEvents: 5,
-    notificationsConsolidated: 3137,
-    reductionPercentage: 99.8,
-    avgNotificationsPerEvent: 627
+    operationalEvents: 10,
+    notificationsSent: 251,
+    notificationsConsolidated: 2891,
+    reductionPercentage: ((3142 - 251) / 3142 * 100).toFixed(1),
+    avgNotificationsPerEvent: Math.floor(251 / 10)
   },
   comparisonPeriod: {
     label: 'Previous 24 Hours',
@@ -416,20 +772,14 @@ export const notificationReduction = {
     notificationsIssued: 3089
   },
   weeklyTrend: [
-    { day: 'Mon', signals: 2940, consolidated: 2918 },
-    { day: 'Tue', signals: 3142, consolidated: 3089 },
-    { day: 'Wed', signals: 2756, consolidated: 2723 },
-    { day: 'Thu', signals: 2889, consolidated: 2854 },
-    { day: 'Fri', signals: 3201, consolidated: 3168 },
-    { day: 'Sat', signals: 2544, consolidated: 2511 },
-    { day: 'Sun', signals: 2847, consolidated: 2835 }
-  ],
-  orchestrationMetrics: {
-    avgStabilizationWindow: 38, // seconds
-    clusterActivationRate: 94, // percentage
-    orchestrationConfidence: 89, // percentage
-    falsePositiveRate: 2.3 // percentage
-  }
+    { day: 'Mon', issues: 142, notifications: 28 },
+    { day: 'Tue', issues: 167, notifications: 22 },
+    { day: 'Wed', issues: 128, notifications: 32 },
+    { day: 'Thu', issues: 153, notifications: 25 },
+    { day: 'Fri', issues: 189, notifications: 20 },
+    { day: 'Sat', issues: 98, notifications: 35 },
+    { day: 'Sun', issues: 134, notifications: 18 }
+  ]
 }
 
 // ============================================

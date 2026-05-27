@@ -1,4 +1,4 @@
-import { Home, Activity, Settings } from 'lucide-react'
+import { Home, Activity, Settings, LayoutDashboard, Rocket } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '../lib/utils'
 
@@ -7,8 +7,10 @@ export default function Sidebar() {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/dashboard-2', icon: LayoutDashboard, label: 'Dashboard 2' },
     { path: '/events', icon: Activity, label: 'Events' },
     { path: '/settings', icon: Settings, label: 'Settings' },
+    { path: '/onboarding', icon: Rocket, label: 'Onboarding' },
   ]
 
   return (

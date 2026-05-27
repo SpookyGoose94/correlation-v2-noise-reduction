@@ -1,4 +1,4 @@
-import { Milestone, Bell, TrendingUp, AlertTriangle, FileEdit } from 'lucide-react'
+import { Bell, TrendingUp, AlertTriangle, FileEdit } from 'lucide-react'
 import { useState } from 'react'
 import Layout from '../components/Layout'
 import { Card, CardContent } from '../components/ui/card'
@@ -76,11 +76,10 @@ export default function MilestoneVisualization() {
 
   return (
     <Layout>
-      <div className="space-y-8">
+      <div className="space-y-8 p-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-text-primary flex items-center gap-3">
-            <Milestone className="h-8 w-8 text-accent-purple" />
+          <h1 className="text-3xl font-bold text-text-primary">
             Milestone Visualization Options
           </h1>
           <p className="mt-2 text-text-secondary">

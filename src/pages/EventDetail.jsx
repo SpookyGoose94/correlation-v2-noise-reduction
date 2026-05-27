@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
-import { ArrowLeft, AlertCircle, Server, Clock, TrendingDown, CheckCircle, AlertTriangle, Bell, TrendingUp, FileEdit, Milestone, ChevronDown } from 'lucide-react'
+import { ArrowLeft, AlertCircle, Server, Clock, AlertTriangle, Bell, TrendingUp, FileEdit, Milestone, ChevronDown, MoreVertical } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -15,7 +15,7 @@ const milestones = [
   {
     id: 1,
     issueCount: 1,
-    action: 'Cluster Created',
+    action: 'Pattern Initiated',
     actionType: 'creation',
     details: 'Initial operational event created',
     timestamp: '10:23 AM',
@@ -83,6 +83,8 @@ export default function EventDetail() {
   const [selectedSeverity, setSelectedSeverity] = useState('all')
   const [openDropdown, setOpenDropdown] = useState(null)
   const [selectedIssue, setSelectedIssue] = useState(null)
+  const [openInvestigationDropdown, setOpenInvestigationDropdown] = useState(null)
+  const [openServiceDropdown, setOpenServiceDropdown] = useState(null)
 
   if (!event) {
     return (
@@ -115,11 +117,17 @@ export default function EventDetail() {
       if (openDropdown && !event.target.closest('.relative')) {
         setOpenDropdown(null)
       }
+      if (openInvestigationDropdown && !event.target.closest('.investigation-dropdown-container')) {
+        setOpenInvestigationDropdown(null)
+      }
+      if (openServiceDropdown && !event.target.closest('.service-dropdown-container')) {
+        setOpenServiceDropdown(null)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [openDropdown])
+  }, [openDropdown, openInvestigationDropdown, openServiceDropdown])
 
   const severityColors = {
     critical: '#f87171',
@@ -129,7 +137,7 @@ export default function EventDetail() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-6 p-6">
         {/* Top Navigation */}
         <div className="flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate('/')}>
@@ -310,17 +318,25 @@ export default function EventDetail() {
               {/* Recommended Actions - Left */}
               <Card className="h-full">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-accent-blue" />
-                    Recommended Investigation Steps
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>
+                      Recommended investigation avenues
+                    </CardTitle>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-accent-blue hover:bg-accent-blue/90"
+                    >
+                      Initiate with SRE agent
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2.5">
                     {event.recommendedActions.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-3 rounded-lg border border-border bg-background-tertiary p-3 min-h-[85px]"
+                        className="flex items-start gap-3 rounded-lg border border-border bg-background-tertiary p-3 min-h-[85px] investigation-dropdown-container relative"
                       >
                         <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-accent-blue/20 text-xs font-semibold text-accent-blue">
                           {idx + 1}
@@ -328,6 +344,33 @@ export default function EventDetail() {
                         <div className="flex-1">
                           <p className="text-sm font-semibold text-text-primary">{item.action}</p>
                           <p className="mt-1 text-xs text-text-muted">{item.reason}</p>
+                        </div>
+                        <div className="flex-shrink-0 relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setOpenInvestigationDropdown(openInvestigationDropdown === idx ? null : idx)
+                            }}
+                            className="p-1 rounded-md hover:bg-background-secondary transition-colors"
+                          >
+                            <MoreVertical className="h-4 w-4 text-text-secondary" />
+                          </button>
+                          {openInvestigationDropdown === idx && (
+                            <div className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-border bg-background-secondary shadow-lg min-w-[200px]">
+                              <div className="py-1">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setOpenInvestigationDropdown(null)
+                                    // Handle SRE agent action here
+                                  }}
+                                  className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-background-tertiary transition-colors"
+                                >
+                                  Check with SRE agent
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -338,17 +381,25 @@ export default function EventDetail() {
               {/* Affected Services - Right */}
               <Card className="h-full">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Server className="h-5 w-5 text-accent-cyan" />
-                    Impacted Services
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>
+                      Impacted Services
+                    </CardTitle>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-accent-blue hover:bg-accent-blue/90"
+                    >
+                      Investigate
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2.5">
-                    {event.serviceBreakdown.map((service) => (
+                    {event.serviceBreakdown.map((service, serviceIdx) => (
                       <div
                         key={service.name}
-                        className="rounded-lg border border-border bg-background-tertiary p-3 min-h-[85px]"
+                        className="rounded-lg border border-border bg-background-tertiary p-3 min-h-[85px] service-dropdown-container relative"
                       >
                         <div className="mb-2 flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -370,6 +421,33 @@ export default function EventDetail() {
                               <div className="text-xs text-text-muted">Error Rate</div>
                               <div className="text-sm font-semibold text-accent-red">{service.errorRate}</div>
                             </div>
+                            <div className="flex-shrink-0 relative">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setOpenServiceDropdown(openServiceDropdown === serviceIdx ? null : serviceIdx)
+                                }}
+                                className="p-1 rounded-md hover:bg-background-secondary transition-colors"
+                              >
+                                <MoreVertical className="h-4 w-4 text-text-secondary" />
+                              </button>
+                              {openServiceDropdown === serviceIdx && (
+                                <div className="absolute right-0 top-full mt-1 z-50 rounded-lg border border-border bg-background-secondary shadow-lg min-w-[200px]">
+                                  <div className="py-1">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        setOpenServiceDropdown(null)
+                                        // Handle investigate action here
+                                      }}
+                                      className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-background-tertiary transition-colors"
+                                    >
+                                      Investigate
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="text-xs text-text-muted">
@@ -382,12 +460,53 @@ export default function EventDetail() {
               </Card>
             </div>
 
+            {/* Contributing Correlation Rules */}
+            {event.contributingRules && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    Contributing Correlation Rules
+                  </CardTitle>
+                  <p className="text-sm text-text-muted mt-1">
+                    Rules that identified and grouped issues into this operational event
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {event.contributingRules.map((rule, idx) => (
+                      <div key={idx} className="space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-text-primary">{rule.name}</span>
+                              <Badge variant="secondary" className="text-xs">
+                                {rule.issueCount} issues
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-text-muted mt-1">{rule.description}</p>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            <span className="text-sm font-bold text-accent-blue">{rule.percentage}%</span>
+                          </div>
+                        </div>
+                        <div className="relative h-2 w-full bg-background-tertiary rounded-full overflow-hidden">
+                          <div
+                            className="absolute top-0 left-0 h-full bg-accent-blue rounded-full transition-all"
+                            style={{ width: `${rule.percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Noise Reduction & Suppressed Issues */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingDown className="h-5 w-5 text-accent-green" />
+                  <CardTitle>
                     Noise Reduction Impact
                   </CardTitle>
                   <Badge variant="success" className="text-sm">

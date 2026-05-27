@@ -1,4 +1,4 @@
-import { Activity, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import Layout from '../components/Layout'
 import { Badge } from '../components/ui/badge'
 import { operationalEvents } from '../data/mockData'
@@ -18,11 +18,10 @@ export default function Events() {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-6 p-6">
         {/* Page Header */}
         <div>
-          <h1 className="text-3xl font-bold text-text-primary flex items-center gap-3">
-            <Activity className="h-8 w-8 text-accent-blue" />
+          <h1 className="text-3xl font-bold text-text-primary">
             Operational Events
           </h1>
           <p className="mt-2 text-text-secondary">
